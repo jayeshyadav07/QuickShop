@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
 import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
 
 // database connection
 connectDB();
@@ -17,6 +18,9 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
 	res.send('Server is running');
 });
+
+// routes
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => {
 	console.log(`Server is running on port ${PORT}`);
