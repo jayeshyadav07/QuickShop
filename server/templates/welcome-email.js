@@ -1,4 +1,4 @@
-export const welcomeEmailTemplate = (name, clientUrl) => {
+export const welcomeEmailTemplate = (name) => {
 	return `
   <!DOCTYPE html>
   <html>
@@ -41,7 +41,7 @@ export const welcomeEmailTemplate = (name, clientUrl) => {
 
                 <div style="text-align:center;margin:35px 0;">
                   <a
-                    href="${clientUrl}"
+                    href="${process.env.CLIENT_URL}"
                     style="
                       background:#2563eb;
                       color:#ffffff;

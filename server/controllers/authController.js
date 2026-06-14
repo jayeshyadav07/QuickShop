@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
 			const otp = Math.floor(100000 + Math.random() * 900000);
 
 			// Send Welcome
-			const message = welcomeEmailTemplate(user.name, process.env.CLIENT_URL);
+			const message = welcomeEmailTemplate(user.name);
 
 			await sendEmail({
 				to: user.email,
