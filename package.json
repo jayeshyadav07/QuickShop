@@ -1,28 +1,37 @@
 {
-  "name": "quickshop",
-  "version": "1.0.0",
-  "description": "",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky",
-    "format": "prettier --write ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jayeshyadav07/QuickShop.git"
-  },
-  "author": "Jayesh Yadav",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jayeshyadav07/QuickShop/issues"
-  },
-  "homepage": "https://github.com/jayeshyadav07/QuickShop#readme",
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": ["prettier --write"]
-  },
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "prettier": "^3.8.4"
-  }
+	"name": "quickshop",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"install": "cd app && npm install && cd ../server && npm install",
+		"dev:client": "cd app && npm run dev",
+		"dev:server": "cd server && npm run dev",
+		"dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+		"build": "cd app && npm run build",
+		"prepare": "husky",
+		"format": "prettier --write ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/jayeshyadav07/QuickShop.git"
+	},
+	"author": "Jayesh Yadav",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/jayeshyadav07/QuickShop/issues"
+	},
+	"homepage": "https://github.com/jayeshyadav07/QuickShop#readme",
+	"lint-staged": {
+		"**/*.{js,jsx,ts,tsx}": [
+			"prettier --write"
+		]
+	},
+	"devDependencies": {
+		"husky": "^9.1.7",
+		"lint-staged": "^16.4.0",
+		"prettier": "^3.8.4"
+	},
+	"dependencies": {
+		"concurrently": "^10.0.3"
+	}
 }
