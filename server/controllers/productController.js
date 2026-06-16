@@ -3,7 +3,9 @@ import cloudinary from '../config/cloudinary.js';
 
 const getProducts = async (req, res) => {
 	try {
-		const products = await Product.find({});
+		let limit = req.query.limit || 5;
+		let skip = req.query.skip || 0;
+		const products = await Product.find({}).limit(limit).skip(skip);
 		res.json(products);
 	} catch (error) {
 		res.status(500).json({ message: error.message });

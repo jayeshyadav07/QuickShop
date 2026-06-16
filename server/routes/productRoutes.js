@@ -11,8 +11,8 @@ import { upload } from '../utils/multer.js';
 
 const router = express.Router();
 
-router.get('/', authenticate, getProducts);
-router.get('/:id', authenticate, getProductById);
+router.get('/', getProducts);
+router.get('/:id', getProductById);
 
 // Admin only routes
 router.post('/', authenticate, authorize(['admin']), upload.array('images', 5), createProduct);
