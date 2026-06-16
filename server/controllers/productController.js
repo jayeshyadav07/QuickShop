@@ -3,10 +3,31 @@ import cloudinary from '../config/cloudinary.js';
 
 const getProducts = async (req, res) => {
 	try {
-		let limit = req.query.limit || 5;
-		let skip = req.query.skip || 0;
-		const products = await Product.find({}).limit(limit).skip(skip);
-		res.json(products);
+		const page = parseInt(req.query.page) || 1;
+		const limit = parseInt(req.query.limit) || 8;
+		const skip = req.query.skip ? parseInt(req.query.skip) : (page - 1) * limit;
+		const search = req.query.search || '';
+		const category = req.query.category || '';
+
+		const filter = {};
+		if (search) {
+			filter.name = { $regex: search, $options: 'i' };
+		}
+		if (category) {
+			filter.category = category;
+		}
+
+		const [products, totalCount] = await Promise.all([
+			Product.find(filter).sort({ createdAt: -1 }).limit(limit).skip(skip),
+			Product.countDocuments(filter),
+		]);
+
+		res.json({
+			products,
+			totalCount,
+			page,
+			totalPages: Math.ceil(totalCount / limit),
+		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
