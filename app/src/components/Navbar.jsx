@@ -2,10 +2,11 @@ import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
 	const { user, logout } = useContext(AuthContext);
-
+	const cartItems = useSelector((state) => state.cart.cartItems);
 	const navigate = useNavigate();
 
 	const handleLogout = () => {
@@ -40,7 +41,7 @@ const Navbar = () => {
 						to="/cart"
 						className="text-sm font-medium transition-colors hover:text-primary"
 					>
-						Cart
+						Cart ({cartItems.length})
 					</Link>
 
 					{user ? (
