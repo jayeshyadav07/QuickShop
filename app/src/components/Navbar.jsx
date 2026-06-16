@@ -1,38 +1,82 @@
 import { Link, useNavigate } from 'react-router';
-
 import { Button } from '@/components/ui/button';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
+	const { user, logout } = useContext(AuthContext);
+
 	const navigate = useNavigate();
+
+	const handleLogout = () => {
+		logout();
+	};
+
 	return (
-		<nav className="border-b bg-background">
+		<header className="sticky top-0 z-50 border-b bg-background">
 			<div className="container mx-auto flex h-16 items-center justify-between px-4">
-				<Link to="/" className="flex items-center gap-2 text-xl font-bold">
-					<div>
-						<span>QuickShop</span>
-					</div>
+				{/* Logo */}
+				<Link to="/" className="text-2xl font-bold tracking-tight text-primary">
+					QuickShop
 				</Link>
+
 				{/* Navigation */}
 				<div className="flex items-center gap-6">
 					<Link
+						to="/"
+						className="text-sm font-medium transition-colors hover:text-primary"
+					>
+						Home
+					</Link>
+
+					<Link
 						to="/shop"
-						className="text-sm font-medium hover:text-primary transition-colors"
+						className="text-sm font-medium transition-colors hover:text-primary"
 					>
 						Shop
 					</Link>
 
 					<Link
 						to="/cart"
-						className="text-sm font-medium hover:text-primary transition-colors"
+						className="text-sm font-medium transition-colors hover:text-primary"
 					>
 						Cart
 					</Link>
-					<Button asChild size="sm">
-						<Link to="/login">Login</Link>
-					</Button>
+
+					{user ? (
+						<>
+							<span className="text-sm text-muted-foreground">
+								<Link
+									to={`/profile`}
+									className="hover:text-foreground transition-colors"
+								>
+									Hi, <span className="font-medium">{user.name}</span>
+								</Link>
+							</span>
+
+							{user.role === 'admin' && (
+								<Button asChild variant="secondary" size="sm">
+									<Link to="/admin">Admin</Link>
+								</Button>
+							)}
+
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleLogout}
+								className="cursor-pointer"
+							>
+								Logout
+							</Button>
+						</>
+					) : (
+						<Button asChild size="sm">
+							<Link to="/login">Login</Link>
+						</Button>
+					)}
 				</div>
 			</div>
-		</nav>
+		</header>
 	);
 };
 
