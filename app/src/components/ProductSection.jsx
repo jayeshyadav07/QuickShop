@@ -14,7 +14,7 @@ const ProductSection = () => {
 			try {
 				setLoading(true);
 				const res = await axios.get(`${API_PATHS.PRODUCTS.GET}?limit=4`);
-				setProducts(res.data);
+				setProducts(res.data.products);
 			} catch (error) {
 				console.log(error);
 			} finally {
