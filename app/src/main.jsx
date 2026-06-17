@@ -5,12 +5,14 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext';
 import { Provider } from 'react-redux';
 import { store } from './redux/store.jsx';
+import { Toaster } from './components/ui/sonner';
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<AuthProvider>
 			<Provider store={store}>
 				<App />
+				<Toaster />
 			</Provider>
 		</AuthProvider>
 	</StrictMode>

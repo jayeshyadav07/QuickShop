@@ -3,6 +3,7 @@ import { removeFromCart, clearCart } from '../redux/cartSlice';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 const Cart = () => {
 	const { cartItems } = useSelector((state) => state.cart);
@@ -34,7 +35,10 @@ const Cart = () => {
 					variant="outline"
 					size="sm"
 					className="text-destructive hover:bg-destructive/10"
-					onClick={() => dispatch(clearCart())}
+					onClick={() => {
+						dispatch(clearCart());
+						toast.success('Cart cleared');
+					}}
 				>
 					Clear Cart
 				</Button>
@@ -87,7 +91,10 @@ const Cart = () => {
 									variant="ghost"
 									size="icon"
 									className="shrink-0 text-muted-foreground hover:text-destructive"
-									onClick={() => dispatch(removeFromCart(item._id))}
+									onClick={() => {
+										dispatch(removeFromCart(item._id));
+										toast.success(`${item.name} removed from cart`);
+									}}
 									title="Remove item"
 								>
 									<svg

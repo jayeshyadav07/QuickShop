@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_PATHS } from '@/utils/api';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -35,6 +36,7 @@ const Shop = () => {
 				setCategories(cats.sort());
 			} catch (error) {
 				console.error('Failed to fetch categories:', error);
+				toast.error('Failed to load categories');
 			}
 		};
 		fetchCategories();
@@ -57,6 +59,7 @@ const Shop = () => {
 			setTotalCount(res.data.totalCount);
 		} catch (error) {
 			console.error('Failed to fetch products:', error);
+			toast.error('Failed to load products');
 		} finally {
 			setLoading(false);
 		}

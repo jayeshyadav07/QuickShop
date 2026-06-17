@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { API_PATHS } from '@/utils/api';
 import { Button } from '@/components/ui/button';
 import { addToCart } from '../redux/cartSlice';
+import { toast } from 'sonner';
 
 const ProductDetails = () => {
 	const { id } = useParams();
@@ -23,6 +24,7 @@ const ProductDetails = () => {
 				setProduct(res.data);
 			} catch (error) {
 				console.error('failed to get product details', error);
+				toast.error('Failed to load product details');
 			} finally {
 				setLoading(false);
 			}
@@ -32,8 +34,13 @@ const ProductDetails = () => {
 	}, []);
 
 	const handleAddToCart = () => {
-		if (qty === 0) return;
+		if (qty === 0) {
+			toast.warning('Please select a quantity');
+			return;
+		}
 		dispatch(addToCart({ ...product, qty }));
+		toast.success(`${product.name} added to cart`);
+		setQty(0);
 	};
 
 	if (loading) {
