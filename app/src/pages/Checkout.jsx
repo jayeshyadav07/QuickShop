@@ -140,7 +140,7 @@ const Checkout = () => {
 		return (
 			<div className="mx-auto max-w-2xl px-4 py-16 min-h-[85vh] flex items-center justify-center">
 				<Card className="w-full border border-border/60 shadow-xl overflow-hidden animate-fade-in-up bg-card/60 backdrop-blur-md">
-					<div className="h-2 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600" />
+					<div className="h-2 bg-linear-to-r from-emerald-400 via-teal-500 to-emerald-600" />
 					<CardContent className="pt-10 pb-8 px-6 sm:px-10 text-center flex flex-col items-center">
 						<div className="relative mb-6">
 							<div className="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl animate-pulse" />
@@ -233,7 +233,7 @@ const Checkout = () => {
 					<ArrowLeft className="h-5 w-5" />
 				</Link>
 				<div>
-					<h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+					<h1 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-foreground to-foreground/80 bg-clip-text">
 						Checkout
 					</h1>
 					<p className="text-sm text-muted-foreground">
