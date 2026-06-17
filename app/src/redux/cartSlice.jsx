@@ -10,16 +10,16 @@ export const cartSlice = createSlice({
 	reducers: {
 		addToCart: (state, action) => {
 			const item = action.payload;
-			const isExist = state.cartItems.find((i) => i.id === item.id);
+			const isExist = state.cartItems.find((i) => i._id === item._id);
 			if (isExist) {
-				state.cartItems = state.cartItems.map((i) => (i.id === item.id ? item : i));
+				state.cartItems = state.cartItems.map((i) => (i._id === item._id ? item : i));
 			} else {
 				state.cartItems.push(item);
 			}
 			localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
 		},
 		removeFromCart: (state, action) => {
-			state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
+			state.cartItems = state.cartItems.filter((item) => item._id !== action.payload);
 			localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
 		},
 		clearCart: (state) => {
