@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router';
 import { Button } from '@/components/ui/button';
+import { AuthContext } from '@/context/AuthContext';
 
 const Hero = () => {
+	const { user } = useContext(AuthContext);
 	return (
 		<section className="flex min-h-[75vh] flex-col items-center justify-center rounded-2xl bg-white px-6 text-center">
 			<h1 className="mb-6 text-5xl font-extrabold tracking-tight text-black md:text-6xl">
@@ -20,7 +22,11 @@ const Hero = () => {
 				</Button>
 
 				<Button asChild variant="outline" size="lg">
-					<Link to="/login">Login</Link>
+					{user ? (
+						<Link to="/orders">Go to Dashboard</Link>
+					) : (
+						<Link to="/login">Login</Link>
+					)}
 				</Button>
 			</div>
 		</section>

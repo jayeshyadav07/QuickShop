@@ -48,7 +48,7 @@ const Navbar = () => {
 						<>
 							<span className="text-sm text-muted-foreground">
 								<Link
-									to={`/profile`}
+									to={`/order`}
 									className="hover:text-foreground transition-colors"
 								>
 									Hi, <span className="font-medium">{user.name}</span>
