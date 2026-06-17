@@ -1,13 +1,17 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, clearCart } from '../redux/cartSlice';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 const Cart = () => {
 	const { cartItems } = useSelector((state) => state.cart);
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { user } = useContext(AuthContext);
 
 	const totalPrice = cartItems.reduce((sum, item) => sum + (item.price || 0) * item.qty, 0);
 
@@ -142,7 +146,18 @@ const Cart = () => {
 								<span>₹{totalPrice.toLocaleString()}</span>
 							</div>
 
-							<Button size="lg" className="w-full mt-2">
+							<Button
+								size="lg"
+								className="w-full mt-2 cursor-pointer"
+								onClick={() => {
+									if (user) {
+										navigate('/checkout');
+									} else {
+										toast.warning('Please log in to proceed to checkout.');
+										navigate('/login?redirect=/checkout');
+									}
+								}}
+							>
 								Proceed to Checkout
 							</Button>
 

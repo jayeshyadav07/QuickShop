@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Link, useSearchParams } from 'react-router';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { API_PATHS } from '@/utils/api';
@@ -14,6 +14,8 @@ export const Register = () => {
 	const [loading, setLoading] = useState(false);
 	const { login } = useContext(AuthContext);
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const redirect = searchParams.get('redirect') || '/';
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -27,7 +29,7 @@ export const Register = () => {
 			const res = await axios.post(API_PATHS.AUTH.REGISTER, { name, email, password });
 			login(res.data.user || res.data); // Auto-login user if the API returns user details
 			toast.success('Registration successful!');
-			navigate('/');
+			navigate(redirect);
 		} catch (error) {
 			console.error(error);
 			toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
