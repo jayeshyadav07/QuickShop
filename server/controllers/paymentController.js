@@ -4,12 +4,12 @@ import crypto from 'crypto';
 const createOrder = async (req, res) => {
 	try {
 		const razorpayInstance = new razorpay({
-			key_id: process.env.KEY_ID,
-			key_secret: process.env.KEY_SECRET,
+			key_id: process.env.RAZORPAY_KEY_ID,
+			key_secret: process.env.RAZORPAY_KEY_SECRET,
 		});
 
 		const amount = Number(req.body.amount);
-		const order = razorpayInstance.orders.create({
+		const order = await razorpayInstance.orders.create({
 			amount: amount * 100, // razorpay takes amount in paisa
 			currency: 'INR',
 			receipt: crypto.randomBytes(10).toString('hex'),
@@ -25,14 +25,14 @@ const createOrder = async (req, res) => {
 	}
 };
 
-const verifyPayment = () => {
+const verifyPayment = async (req, res) => {
 	const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 	if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
 		return res.status(400).json({ message: 'Invalid payment details' });
 	}
 
 	try {
-		const secret = process.env.KEY_SECRET;
+		const secret = process.env.RAZORPAY_KEY_SECRET;
 		const verifier = crypto
 			.createHmac('sha256', secret)
 			.update(`${razorpay_order_id}|${razorpay_payment_id}`)

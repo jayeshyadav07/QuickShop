@@ -42,13 +42,6 @@ const Checkout = () => {
 	const [postalCode, setPostalCode] = useState('');
 	const [country, setCountry] = useState('India');
 
-	// Payment Method State
-	const [paymentMethod, setPaymentMethod] = useState('cod'); // cod, card, upi
-	const [cardNumber, setCardNumber] = useState('');
-	const [cardExpiry, setCardExpiry] = useState('');
-	const [cardCvv, setCardCvv] = useState('');
-	const [upiId, setUpiId] = useState('');
-
 	// Loading and Success State
 	const [loading, setLoading] = useState(false);
 	const [isSuccess, setIsSuccess] = useState(false);
@@ -64,16 +57,6 @@ const Checkout = () => {
 			return;
 		}
 
-		if (paymentMethod === 'card' && (!cardNumber || !cardExpiry || !cardCvv)) {
-			toast.warning('Please complete mock card details');
-			return;
-		}
-
-		if (paymentMethod === 'upi' && !upiId) {
-			toast.warning('Please enter mock UPI ID');
-			return;
-		}
-
 		try {
 			setLoading(true);
 
@@ -84,35 +67,89 @@ const Checkout = () => {
 				price: item.price,
 			}));
 
-			const mockPaymentId =
-				paymentMethod === 'cod'
-					? 'COD-' + Math.floor(100000 + Math.random() * 900000)
-					: 'MOCK-PAY-' + Math.random().toString(36).substring(2, 11).toUpperCase();
+			const orderRes = await axios.post(
+				API_PATHS.PAYMENT.CREATE_ORDER,
+				{ amount: totalPrice },
+				{
+					headers: { Authorization: `Bearer ${user.token}` },
+				}
+			);
 
-			const orderData = {
-				items,
-				totalAmount: totalPrice,
-				address: {
-					fullName,
-					street,
-					city,
-					postalCode,
-					country,
+			if (!orderRes.status == 200) {
+				// Razorpay unconfigured exception handling
+				const fallback = window.confirm(
+					'Razorpay is currently unavailable. Use bypass mode to place order? (This is a demo app)'
+				);
+
+				if (fallback) {
+					toast.error('TO BE IMPLEMENTED!');
+					// return bypassPayment();
+					setLoading(false);
+					return;
+				} else {
+					toast.error('Razorpay is currently unavailable. Please try again later.');
+					return;
+				}
+			}
+
+			// Razorpay order created
+			const razorpayOrder = orderRes.data;
+
+			const razorpayOptions = {
+				key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+				amount: razorpayOrder.amount,
+				currency: razorpayOrder.currency,
+				name: 'QuickShop',
+				description: 'Order Payment',
+				order_id: razorpayOrder.id,
+				prefill: {
+					name: user.name,
+					email: user.email,
+					address: fullName,
 				},
-				paymentId: mockPaymentId,
+				handler: async (response) => {
+					const verifyRes = await axios.post(API_PATHS.PAYMENT.VERIFY_PAYMENT, response, {
+						headers: { Authorization: `Bearer ${user.token}` },
+					});
+
+					if (verifyRes.status == 200) {
+						const orderData = {
+							items,
+							totalAmount: totalPrice,
+							address: {
+								fullName,
+								street,
+								city,
+								postalCode,
+								country,
+							},
+							paymentId: response.razorpay_payment_id,
+						};
+
+						const saveOrderRes = await axios.post(API_PATHS.ORDER.ADD, orderData, {
+							headers: { Authorization: `Bearer ${user.token}` },
+						});
+
+						if (saveOrderRes.status == 201) {
+							setCreatedOrder(saveOrderRes.data);
+							dispatch(clearCart());
+							setIsSuccess(true);
+							toast.success('Order placed successfully!');
+						} else {
+							toast.error('Order creation failed after payment verification');
+							navigate('/cart');
+							return;
+						}
+					} else {
+						toast.error('Payment verification failed');
+						navigate('/cart');
+						return;
+					}
+				},
 			};
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${user.token}`,
-				},
-			};
-
-			const res = await axios.post(API_PATHS.ORDER.ADD, orderData, config);
-			setCreatedOrder(res.data);
-			dispatch(clearCart());
-			setIsSuccess(true);
-			toast.success('Order placed successfully!');
+			const rzp = new window.Razorpay(razorpayOptions);
+			rzp.open();
 		} catch (error) {
 			console.error(error);
 			toast.error(
@@ -346,139 +383,6 @@ const Checkout = () => {
 									/>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
-
-					{/* Payment Options */}
-					<Card className="border border-border/50 shadow-sm overflow-hidden">
-						<CardHeader className="bg-muted/10 border-b py-4">
-							<CardTitle className="text-lg font-bold flex items-center gap-2">
-								<CreditCard className="h-5 w-5 text-primary" />
-								Payment Method
-							</CardTitle>
-							<CardDescription>
-								Choose how you would like to pay. Note: Payments are mocked.
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-6 pt-6">
-							{/* Selectors */}
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-								<div
-									onClick={() => setPaymentMethod('cod')}
-									className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all hover:bg-muted/20 select-none ${paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border/60 bg-card'}`}
-								>
-									<DollarSign
-										className={`h-6 w-6 ${paymentMethod === 'cod' ? 'text-primary' : 'text-muted-foreground'}`}
-									/>
-									<span className="font-medium text-sm">Cash on Delivery</span>
-									<span className="text-[10px] text-muted-foreground">
-										Pay at your doorstep
-									</span>
-								</div>
-
-								<div
-									onClick={() => setPaymentMethod('card')}
-									className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all hover:bg-muted/20 select-none ${paymentMethod === 'card' ? 'border-primary bg-primary/5' : 'border-border/60 bg-card'}`}
-								>
-									<CreditCard
-										className={`h-6 w-6 ${paymentMethod === 'card' ? 'text-primary' : 'text-muted-foreground'}`}
-									/>
-									<span className="font-medium text-sm">Credit / Debit Card</span>
-									<span className="text-[10px] text-muted-foreground">
-										Visa, Mastercard
-									</span>
-								</div>
-
-								<div
-									onClick={() => setPaymentMethod('upi')}
-									className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all hover:bg-muted/20 select-none ${paymentMethod === 'upi' ? 'border-primary bg-primary/5' : 'border-border/60 bg-card'}`}
-								>
-									<Sparkles
-										className={`h-6 w-6 ${paymentMethod === 'upi' ? 'text-primary' : 'text-muted-foreground'}`}
-									/>
-									<span className="font-medium text-sm">UPI Transfer</span>
-									<span className="text-[10px] text-muted-foreground">
-										Google Pay, PhonePe, Paytm
-									</span>
-								</div>
-							</div>
-
-							{/* Card Details Form Mock */}
-							{paymentMethod === 'card' && (
-								<div className="p-5 bg-muted/30 border rounded-xl space-y-4 animate-fade-in-up">
-									<div className="flex items-center justify-between text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-										<span>Mock Card Details</span>
-										<span className="text-emerald-600 font-medium">
-											Fully Secure Mode
-										</span>
-									</div>
-									<div className="space-y-2">
-										<label className="text-xs font-medium text-muted-foreground">
-											Card Number
-										</label>
-										<input
-											type="text"
-											placeholder="4111 2222 3333 4444"
-											value={cardNumber}
-											onChange={(e) => setCardNumber(e.target.value)}
-											maxLength="19"
-											className="h-9 w-full rounded-md border bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-										/>
-									</div>
-									<div className="grid grid-cols-2 gap-4">
-										<div className="space-y-2">
-											<label className="text-xs font-medium text-muted-foreground">
-												Expiry Date
-											</label>
-											<input
-												type="text"
-												placeholder="MM/YY"
-												value={cardExpiry}
-												onChange={(e) => setCardExpiry(e.target.value)}
-												maxLength="5"
-												className="h-9 w-full rounded-md border bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-											/>
-										</div>
-										<div className="space-y-2">
-											<label className="text-xs font-medium text-muted-foreground">
-												CVV
-											</label>
-											<input
-												type="password"
-												placeholder="•••"
-												value={cardCvv}
-												onChange={(e) => setCardCvv(e.target.value)}
-												maxLength="4"
-												className="h-9 w-full rounded-md border bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-											/>
-										</div>
-									</div>
-								</div>
-							)}
-
-							{/* UPI Details Form Mock */}
-							{paymentMethod === 'upi' && (
-								<div className="p-5 bg-muted/30 border rounded-xl space-y-4 animate-fade-in-up">
-									<div className="flex items-center justify-between text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-										<span>Mock UPI details</span>
-										<span className="text-emerald-600 font-medium">
-											Instant Verification
-										</span>
-									</div>
-									<div className="space-y-2">
-										<label className="text-xs font-medium text-muted-foreground">
-											UPI ID / VPA
-										</label>
-										<input
-											type="text"
-											placeholder="username@okaxis"
-											value={upiId}
-											onChange={(e) => setUpiId(e.target.value)}
-											className="h-9 w-full rounded-md border bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-										/>
-									</div>
-								</div>
-							)}
 						</CardContent>
 					</Card>
 				</div>
