@@ -14,6 +14,7 @@ const createOrder = async (req, res) => {
 			totalAmount,
 			address,
 			paymentId,
+			paymentStatus: 'Completed',
 		});
 		const createdOrder = await order.save();
 

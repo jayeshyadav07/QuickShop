@@ -170,25 +170,6 @@ const Order = () => {
 										))}
 								</div>
 							</div>
-
-							{/* Shipping Address */}
-							{order.address && (
-								<div>
-									<h3 className="font-semibold mb-3">Shipping Address</h3>
-									<div className="p-4 border rounded-lg bg-muted/20">
-										<p className="font-medium">{order.address.fullName}</p>
-										<p className="text-sm text-muted-foreground mt-1">
-											{order.address.street}
-										</p>
-										<p className="text-sm text-muted-foreground">
-											{order.address.city}, {order.address.postalCode}
-										</p>
-										<p className="text-sm text-muted-foreground">
-											{order.address.country}
-										</p>
-									</div>
-								</div>
-							)}
 						</CardContent>
 					</Card>
 				))}
