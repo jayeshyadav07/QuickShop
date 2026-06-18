@@ -23,7 +23,7 @@ const Hero = () => {
 
 				<Button asChild variant="outline" size="lg">
 					{user ? (
-						<Link to="/orders">Go to Dashboard</Link>
+						<Link to="/order">Go to Dashboard</Link>
 					) : (
 						<Link to="/login">Login</Link>
 					)}
