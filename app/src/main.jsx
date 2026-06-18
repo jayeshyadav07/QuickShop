@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
 		<AuthProvider>
 			<Provider store={store}>
 				<App />
-				<Toaster />
+				<Toaster richColors closeButton />
 			</Provider>
 		</AuthProvider>
 	</StrictMode>
