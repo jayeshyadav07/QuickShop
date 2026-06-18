@@ -72,20 +72,18 @@ const Checkout = () => {
 				{ amount: totalPrice },
 				{
 					headers: { Authorization: `Bearer ${user.token}` },
+					validateStatus: () => true, // Never throw based on HTTP status
 				}
 			);
 
-			if (!orderRes.status == 200) {
+			if (orderRes.status != 200) {
 				// Razorpay unconfigured exception handling
 				const fallback = window.confirm(
 					'Razorpay is currently unavailable. Use bypass mode to place order? (This is a demo app)'
 				);
 
 				if (fallback) {
-					toast.error('TO BE IMPLEMENTED!');
-					// return bypassPayment();
-					setLoading(false);
-					return;
+					return bypassPayment();
 				} else {
 					toast.error('Razorpay is currently unavailable. Please try again later.');
 					return;
@@ -109,7 +107,10 @@ const Checkout = () => {
 				},
 				handler: async (response) => {
 					const verifyRes = await axios.post(API_PATHS.PAYMENT.VERIFY_PAYMENT, response, {
-						headers: { Authorization: `Bearer ${user.token}` },
+						headers: {
+							Authorization: `Bearer ${user.token}`,
+							validateStatus: () => true,
+						},
 					});
 
 					if (verifyRes.status == 200) {
@@ -127,7 +128,10 @@ const Checkout = () => {
 						};
 
 						const saveOrderRes = await axios.post(API_PATHS.ORDER.ADD, orderData, {
-							headers: { Authorization: `Bearer ${user.token}` },
+							headers: {
+								Authorization: `Bearer ${user.token}`,
+								validateStatus: () => true,
+							},
 						});
 
 						if (saveOrderRes.status == 201) {
@@ -157,6 +161,38 @@ const Checkout = () => {
 			);
 		} finally {
 			setLoading(false);
+		}
+	};
+
+	const bypassPayment = async () => {
+		// Format items for database Schema
+		const items = cartItems.map((item) => ({
+			productId: item._id,
+			qty: item.qty,
+			price: item.price,
+		}));
+
+		const orderData = {
+			items,
+			totalAmount: totalPrice,
+			address: {
+				fullName,
+				street,
+				city,
+				postalCode,
+				country,
+			},
+			paymentId: 'bypass_txn_' + Date.now(),
+		};
+		const saveOrderRes = await axios.post(API_PATHS.ORDER.ADD, orderData, {
+			headers: { Authorization: `Bearer ${user.token}` },
+		});
+
+		if (saveOrderRes.status == 201) {
+			setCreatedOrder(saveOrderRes.data);
+			dispatch(clearCart());
+			setIsSuccess(true);
+			toast.success('Order placed successfully!');
 		}
 	};
 
