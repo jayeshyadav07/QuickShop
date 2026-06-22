@@ -51,7 +51,12 @@ const getMyOrders = async (req, res) => {
 				.populate('items.productId', 'name price'),
 			Order.countDocuments({ userId: req.user._id }),
 		]);
-		res.status(200).json(orders);
+		res.status(200).json({
+			orders,
+			totalCount,
+			page,
+			totalPages: Math.ceil(totalCount / limit),
+		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
@@ -74,7 +79,7 @@ const getOrders = async (req, res) => {
 			orders,
 			totalCount,
 			page,
-			totalPages: Math.ceil(orders[1] / limit),
+			totalPages: Math.ceil(totalCount / limit),
 		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
