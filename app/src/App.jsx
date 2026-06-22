@@ -9,6 +9,11 @@ import Register from './pages/Register';
 import ProductDetails from './components/ProductDetails';
 import Checkout from './pages/Checkout';
 import Order from './pages/Order';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminAddProduct from './pages/admin/AdminAddProduct';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminUsers from './pages/admin/AdminUsers';
 
 function App() {
 	return (
@@ -23,6 +28,11 @@ function App() {
 				<Route path="/register" element={<Register />} />
 				<Route path="/checkout" element={<Checkout />} />
 				<Route path="/order" element={<Order />} />
+				<Route path="/admin" element={<AdminDashboard />} />
+				<Route path="/admin/add-product" element={<AdminAddProduct />} />
+				<Route path="/admin/products" element={<AdminProducts />} />
+				<Route path="/admin/orders" element={<AdminOrders />} />
+				<Route path="/admin/users" element={<AdminUsers />} />
 			</Routes>
 			<Footer />
 		</Router>

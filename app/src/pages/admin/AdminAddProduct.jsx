@@ -1,3 +1,4 @@
+import AdminHeader from '@/components/AdminHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthContext } from '@/context/AuthContext';
@@ -96,6 +97,8 @@ const AdminAddProduct = () => {
 	return (
 		<div className="min-h-[80vh] bg-background px-4 py-10 sm:px-6">
 			<div className="mx-auto max-w-5xl">
+				<AdminHeader />
+
 				<div className="mb-8">
 					<h1 className="mt-4 text-3xl text-center font-bold tracking-tight">
 						Add Product

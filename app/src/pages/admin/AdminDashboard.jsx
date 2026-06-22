@@ -1,3 +1,4 @@
+import AdminHeader from '@/components/AdminHeader';
 import { AuthContext } from '@/context/AuthContext';
 import { API_PATHS } from '@/utils/api';
 import axios from 'axios';
@@ -105,6 +106,8 @@ const AdminDashboard = () => {
 	return (
 		<div className="min-h-[80vh] bg-background">
 			<div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+				<AdminHeader />
+
 				<div className="border-b pb-6">
 					<div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
 						<div>
