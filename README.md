@@ -81,11 +81,16 @@ Notes:
 
 ### Frontend
 
-Create `app/.env`.
+Create `app/.env` from `app/.env.example`.
 
 ```env
 VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+VITE_API_URL=http://localhost:3000
 ```
+
+Notes:
+- `VITE_API_URL` should point to the backend origin, without `/api`.
+- With the current setup, the frontend builds API paths like `VITE_API_URL + /api`.
 
 ## Installation
 
@@ -128,6 +133,18 @@ npm run dev:server
 Default local URLs:
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:3000`
+
+Frontend environment example:
+
+```bash
+cp app/.env.example app/.env
+```
+
+Server environment example:
+
+```bash
+cp server/.env.example server/.env
+```
 
 ## Seed Demo Data
 
@@ -183,6 +200,12 @@ Base URL:
 
 ```text
 http://localhost:3000/api
+```
+
+In the frontend, this is derived from:
+
+```text
+VITE_API_URL=http://localhost:3000
 ```
 
 ### Auth
