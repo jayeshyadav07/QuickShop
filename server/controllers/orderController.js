@@ -40,9 +40,17 @@ const createOrder = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
 	try {
-		const orders = await Order.find({ userId: req.user._id })
-			.sort({ createdAt: -1 })
-			.populate('items.productId', 'name price');
+		const page = parseInt(req.query.page) || 1;
+		const limit = parseInt(req.query.limit) || 8;
+		const skip = req.query.skip ? parseInt(req.query.skip) : (page - 1) * limit;
+		const [orders, totalCount] = await Promise.all([
+			Order.find({ userId: req.user._id })
+				.sort({ createdAt: -1 })
+				.limit(limit)
+				.skip(skip)
+				.populate('items.productId', 'name price'),
+			Order.countDocuments({ userId: req.user._id }),
+		]);
 		res.status(200).json(orders);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
@@ -51,8 +59,23 @@ const getMyOrders = async (req, res) => {
 
 const getOrders = async (req, res) => {
 	try {
-		const orders = await Order.find({}).populate('userId', 'id name');
-		res.status(200).json(orders);
+		const page = parseInt(req.query.page) || 1;
+		const limit = parseInt(req.query.limit) || 8;
+		const skip = req.query.skip ? parseInt(req.query.skip) : (page - 1) * limit;
+		const [orders, totalCount] = await Promise.all([
+			Order.find()
+				.sort({ createdAt: -1 })
+				.limit(limit)
+				.skip(skip)
+				.populate('items.productId', 'name price'),
+			Order.countDocuments(),
+		]);
+		res.status(200).json({
+			orders,
+			totalCount,
+			page,
+			totalPages: Math.ceil(orders[1] / limit),
+		});
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
