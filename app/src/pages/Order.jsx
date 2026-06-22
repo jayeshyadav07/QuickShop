@@ -26,7 +26,7 @@ const Order = () => {
 						Authorization: `Bearer ${user.token}`,
 					},
 				});
-				setOrders(response.data);
+				setOrders(response.data.orders);
 			} catch (error) {
 				console.error('Failed to fetch orders:', error);
 				toast.error('Failed to load orders');
