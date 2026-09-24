@@ -35,12 +35,7 @@ const AdminDashboard = () => {
 						Authorization: `Bearer ${user.token}`,
 					},
 				});
-
-				if (res.statusText === 'OK') {
-					setAnalytics(res.data);
-				} else {
-					setAnalytics(fallbackAnalytics);
-				}
+				setAnalytics(res.data);
 			} catch (error) {
 				console.log(error);
 				toast.error(error.response?.data?.message || 'Failed to fetch data');
