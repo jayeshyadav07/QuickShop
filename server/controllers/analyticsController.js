@@ -14,7 +14,7 @@ const getAnalytics = async (req, res) => {
 		const totalOrders = await Order.countDocuments();
 
 		// All Orders with completed status
-		const completedOrders = await Order.find({ status: 'Completed' });
+		const completedOrders = await Order.find({ status: 'Delivered' });
 		const totalCompletedOrders = completedOrders.length;
 
 		// Total revenue from completed orders
